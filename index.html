@@ -17,43 +17,48 @@
 <div class="app">
   <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
     <svg class="side-shape" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="sideFill" x1="0" y1="0" x2="0" y2="1"><stop offset=".42" stop-color="#0F1417" stop-opacity=".97"/><stop offset="1" stop-color="#6045F4" stop-opacity=".9"/></linearGradient></defs>
-      <path d="M0 0H300L292 700L252 860L236 1000H0Z" fill="url(#sideFill)"/>
-      <path class="edge" d="M300 0L292 700L252 860L236 1000"/>
-      <path class="edge2" d="M280 760L260 870L248 1000"/>
+      <path class="edge" d="M299 0V1000"/>
     </svg>
-    <button class="side-toggle" data-side-toggle aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú lateral"><svg><use href="#i-menu"/></svg></button>
-    <a class="brand" href="#/inicio" data-menu aria-label="Abrir menú principal de Overgame" title="Menú principal (M)">
-      <span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span>
-      <span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame"><small>NEXUS HUB</small></span>
-    </a>
-    <p class="nav-label">Principal</p>
-    <nav class="nav">
-      <i class="nav-ind" aria-hidden="true"></i>
-      <a href="#/panel" data-route="panel"><svg><use href="#i-grid"/></svg><span>Mi panel</span></a>
-      <a href="#/inicio" data-route="inicio"><svg><use href="#i-compass"/></svg><span>Inicio / Descubrir</span></a>
-      <a href="#/mood" data-route="mood"><svg><use href="#i-pulse"/></svg><span>Game Mood Finder</span></a>
-      <a href="#/explorar" data-route="explorar"><svg><use href="#i-filter"/></svg><span>Explorar catálogo</span></a>
-      <a href="#/demos" data-route="demos"><svg><use href="#i-play"/></svg><span>Centro de Demos</span><i class="live">LIVE</i></a>
-      <a href="#/calendario" data-route="calendario"><svg><use href="#i-cal"/></svg><span>Calendario &amp; Preventas</span></a>
-      <a href="#/biblioteca" data-route="biblioteca"><svg><use href="#i-heart"/></svg><span>Biblioteca / Favoritos</span><i class="count" id="favCount" hidden></i></a>
-    </nav>
-    <p class="nav-label">Plataformas</p>
-    <div class="plat-grid">
-      <a href="#/explorar?p=pc"><svg><use href="#i-pc"/></svg>PC</a>
-      <a href="#/explorar?p=ps5"><svg><use href="#i-pad"/></svg>PS5</a>
-      <a href="#/explorar?p=xbox"><svg><use href="#i-pad"/></svg>Xbox X|S</a>
-      <a href="#/explorar?p=switch"><svg><use href="#i-switch"/></svg>Switch</a>
-      <a href="#/explorar?p=mobile" class="wide"><svg><use href="#i-phone"/></svg>Móvil (iOS / Android)</a>
+    <div class="side-head">
+      <button class="side-toggle" data-side-toggle aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú lateral"><svg><use href="#i-menu"/></svg></button>
+      <a class="brand" href="#/inicio" data-menu aria-label="Abrir menú principal de Overgame" title="Menú principal (M)">
+        <span class="brand-mark"><img src="assets/og-mark.png" alt="" width="597" height="284"></span>
+        <span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame · Juega, descubre, compra" width="1192" height="211"></span>
+      </a>
     </div>
-    <a class="admin-link" href="#/admin" data-route="admin"><svg><use href="#i-admin"/></svg><span>Admin · Agregar juegos</span></a>
-    <button class="menu-btn" data-menu><svg><use href="#i-grid"/></svg><span>Menú principal</span><kbd>M</kbd></button>
+    <div class="side-body">
+      <nav class="nav">
+        <i class="nav-ind" aria-hidden="true"></i>
+        <p class="nav-label"><span>Descubrir</span></p>
+        <a href="#/panel" data-route="panel"><svg><use href="#i-grid"/></svg><span>Mi panel</span></a>
+        <a href="#/inicio" data-route="inicio"><svg><use href="#i-compass"/></svg><span>Inicio / Descubrir</span></a>
+        <a href="#/mood" data-route="mood"><svg><use href="#i-pulse"/></svg><span>Game Mood Finder</span></a>
+        <a href="#/explorar" data-route="explorar"><svg><use href="#i-filter"/></svg><span>Explorar catálogo</span></a>
+        <p class="nav-label"><span>Jugar y comprar</span></p>
+        <a href="#/demos" data-route="demos"><svg><use href="#i-play"/></svg><span>Centro de Demos</span><i class="live">LIVE</i></a>
+        <a href="#/calendario" data-route="calendario"><svg><use href="#i-cal"/></svg><span>Calendario &amp; Preventas</span></a>
+        <p class="nav-label"><span>Tu colección</span></p>
+        <a href="#/biblioteca" data-route="biblioteca"><svg><use href="#i-heart"/></svg><span>Biblioteca / Favoritos</span><i class="count" id="favCount" hidden></i></a>
+      </nav>
+      <p class="nav-label plat-label"><span>Plataformas</span></p>
+      <div class="plat-grid">
+        <a href="#/explorar?p=pc"><svg><use href="#i-pc"/></svg>PC</a>
+        <a href="#/explorar?p=ps5"><svg><use href="#i-pad"/></svg>PS5</a>
+        <a href="#/explorar?p=xbox"><svg><use href="#i-pad"/></svg>Xbox X|S</a>
+        <a href="#/explorar?p=switch"><svg><use href="#i-switch"/></svg>Switch</a>
+        <a href="#/explorar?p=mobile" class="wide"><svg><use href="#i-phone"/></svg>Móvil (iOS / Android)</a>
+      </div>
+    </div>
+    <div class="side-foot">
+      <a class="admin-link" href="#/admin" data-route="admin"><svg><use href="#i-admin"/></svg><span>Admin · Agregar juegos</span></a>
+      <button class="menu-btn" data-menu><svg><use href="#i-grid"/></svg><span>Menú principal</span><kbd>M</kbd></button>
+    </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <button class="icon-btn side-toggle-m" data-side-toggle aria-label="Abrir menú lateral"><svg><use href="#i-menu"/></svg></button>
-      <a class="brand brand-mobile" href="#/inicio" data-menu aria-label="Abrir menú principal"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span><img class="brand-word" src="assets/og-word.png" alt="Overgame"></a>
+      <a class="brand brand-mobile" href="#/inicio" data-menu aria-label="Abrir menú principal"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="597" height="284"></span><img class="brand-word" src="assets/og-word.png" alt="Overgame"></a>
       <label class="search">
         <svg><use href="#i-search"/></svg>
         <input id="search" type="search" placeholder="Buscar juegos, demos, géneros…" autocomplete="off">

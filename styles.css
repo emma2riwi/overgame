@@ -930,3 +930,46 @@ body.side-open .sidebar .menu-btn{width:208px}
 .brand-mobile .brand-word{height:14px}
 .brand{align-items:center}
 @media (max-width:480px){.brand-mobile .brand-word{display:none}.brand-mobile .brand-mark img{height:22px}}
+
+/* ===== menú lateral v3: cabecera fija · cuerpo con scroll · pie fijo · secciones ===== */
+.sidebar{display:flex;flex-direction:column;gap:0;padding:14px 16px 14px;overflow:hidden;
+  background:linear-gradient(180deg,#0F1417 0%,#0F1417 30%,rgba(96,69,244,.16) 62%,rgba(96,69,244,.42) 100%),#0F1417;
+  border-right:1px solid rgba(83,230,212,.22)}
+body.side-open .sidebar{background:
+  radial-gradient(120% 40% at 0% 100%,rgba(83,230,212,.14),transparent 70%),
+  linear-gradient(180deg,#0F1417 0%,#0F1417 26%,rgba(96,69,244,.2) 60%,rgba(96,69,244,.5) 100%),#0F1417;
+  border-right-color:transparent;box-shadow:24px 0 60px rgba(15,20,23,.7)}
+.side-shape{opacity:0}
+body.side-open .side-shape{opacity:1}
+.side-head{flex:none;padding-bottom:10px}
+.side-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -16px;padding:2px 16px 14px;scrollbar-width:thin;scrollbar-color:rgba(83,230,212,.35) transparent;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 10px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 10px,#000 calc(100% - 18px),transparent 100%)}
+.side-foot{flex:none;display:grid;gap:8px;padding-top:12px;border-top:1px solid rgba(83,230,212,.2)}
+.side-foot .admin-link,.side-foot .menu-btn{margin:0}
+.sidebar .menu-btn{margin:0}
+/* títulos de sección con línea divisoria */
+.sidebar .nav-label{display:flex;align-items:center;gap:10px;opacity:1;width:auto;pointer-events:none;overflow:visible;
+  margin:16px 0 6px;padding:0 4px;font:700 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(83,230,212,.75)}
+.sidebar .nav-label:first-of-type{margin-top:4px}
+.sidebar .nav-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(83,230,212,.4),rgba(96,69,244,.25) 60%,transparent)}
+.sidebar .nav-label span{white-space:nowrap}
+/* riel cerrado: el título se vuelve una rayita centrada */
+body:not(.side-open) .sidebar .nav-label{justify-content:center;margin:10px 0;padding:0}
+body:not(.side-open) .sidebar .nav-label span{display:none}
+body:not(.side-open) .sidebar .nav-label::after{flex:none;width:24px;margin-left:-2px;background:rgba(83,230,212,.35)}
+body:not(.side-open) .sidebar .plat-label{display:none}
+body.side-open .sidebar .nav{width:auto}
+body.side-open .sidebar .plat-grid{width:auto}
+body.side-open .admin-link,body.side-open .sidebar .menu-btn{width:100%}
+.sidebar .nav a{color:var(--gray)}
+.sidebar .nav a span{color:rgba(235,235,237,.86)}
+.sidebar .nav a.active span{color:var(--gray)}
+/* logo nuevo */
+.brand-mark img{height:auto;filter:drop-shadow(0 0 10px rgba(96,69,244,.45))}
+.sidebar .brand-mark img{width:46px}
+.brand-word{height:auto;width:170px}
+.sidebar .brand{gap:10px;padding:2px 0 4px}
+.brand-mobile .brand-mark img{width:44px;height:auto}
+.brand-mobile .brand-word{width:120px;height:auto}
+.intro .brand-word,.intro-brand .brand-word{width:200px}
+@media (max-height:640px){.sidebar .nav a{padding-top:8px;padding-bottom:8px}.sidebar .nav-label{margin:10px 0 4px}}

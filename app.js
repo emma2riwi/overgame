@@ -714,7 +714,7 @@ function showIntro() {
     <div class="intro-bg"><img alt=""><img alt=""><video muted loop playsinline></video><video muted loop playsinline></video></div>
     <div class="intro-shade"></div>
     <header class="intro-top" style="--i:0">
-      <span class="brand"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span><span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame"><small>NEXUS HUB</small></span></span>
+      <span class="brand"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="597" height="284"></span><span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame · Juega, descubre, compra"></span></span>
       <button class="intro-skip" data-go="${MENU[intro.i].r}">Entrar ${icon('arrow')}</button>
     </header>
     <div class="intro-main">
@@ -797,6 +797,7 @@ function setSide(open) {
   document.body.classList.toggle('side-open', open);
   $$('[data-side-toggle]').forEach(b => { b.setAttribute('aria-expanded', open); b.setAttribute('aria-label', open ? 'Cerrar menú lateral' : 'Abrir menú lateral'); });
   if (open) setTimeout(() => $('.nav a.active, .nav a')?.focus({ preventScroll: true }), 60);
+  moveNavIndicator(); setTimeout(moveNavIndicator, 120); setTimeout(moveNavIndicator, 560);
 }
 document.addEventListener('click', e => {
   if (e.target.closest('[data-side-toggle]')) return setSide(!document.body.classList.contains('side-open'));
