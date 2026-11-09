@@ -852,3 +852,81 @@ input{caret-color:var(--mint)}
   .side-toggle-m{display:grid}
   .home-side{grid-template-columns:1fr}
 }
+
+/* ===== sidebar nítido + admin ===== */
+.sidebar,body.side-open .sidebar{backdrop-filter:none;-webkit-backdrop-filter:none}
+.side-scrim{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(15,20,23,.6)}
+.sidebar .brand-text,.sidebar .nav a span,.sidebar .admin-link span{-webkit-font-smoothing:antialiased;transform:translateZ(0)}
+body.side-open .sidebar .nav{margin-bottom:22px}
+body.side-open .sidebar .nav-label{margin-top:8px}
+.sidebar .menu-btn{margin-top:12px;margin-bottom:22px}
+.admin-link{display:flex;align-items:center;gap:11px;margin-top:auto;padding:11px 12px;width:46px;overflow:hidden;white-space:nowrap;border-radius:10px;color:var(--muted);font-weight:600;font-size:13.5px;border:1px dashed rgba(83,230,212,.3);transition:color .3s,border-color .3s,background .3s,width .5s cubic-bezier(.16,1,.3,1)}
+.admin-link svg{flex:none;width:22px;height:22px;color:var(--mint);fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(83,230,212,.7))}
+.admin-link span{opacity:0;transition:opacity .2s}
+body.side-open .admin-link{width:230px}
+body.side-open .admin-link span{opacity:1;transition:opacity .35s ease .15s}
+.admin-link:hover,.admin-link.active{color:var(--gray);border-color:var(--mint);background:var(--mint-12)}
+.admin-link.active{border-style:solid;box-shadow:0 0 18px rgba(83,230,212,.25)}
+@media (max-width:860px){.admin-link{width:230px}.admin-link span{opacity:1}}
+
+.adm-h{font-size:clamp(28px,4vw,44px);line-height:1;letter-spacing:-.02em;margin:0 0 8px}
+.adm-io{display:flex;gap:8px;flex-wrap:wrap}
+.adm-io label{cursor:pointer}
+.adm-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;margin-top:18px}
+.adm-form{display:grid;gap:16px;min-width:0}
+.adm-form fieldset{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;margin:0;padding:18px;border:1px solid rgba(96,69,244,.35);border-radius:16px;background:linear-gradient(180deg,rgba(96,69,244,.08),rgba(15,20,23,.6));min-width:0}
+.adm-form legend{padding:0 8px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mint)}
+.adm-form .f{display:grid;gap:6px;font-size:13px;color:var(--muted);font-weight:500;min-width:0}
+.adm-form .f.full{grid-column:1/-1}
+.adm-form .f small{color:var(--faint);font-weight:400}
+.adm-form input:not([type=checkbox]),.adm-form textarea,.adm-form select{width:100%;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(15,20,23,.85);color:var(--gray);font:inherit;font-size:14px;transition:border-color .2s,box-shadow .2s}
+.adm-form textarea{resize:vertical}
+.adm-form input:focus,.adm-form textarea:focus,.adm-form select:focus{outline:none;border-color:var(--mint);box-shadow:0 0 0 3px rgba(83,230,212,.18)}
+.adm-form .hint{color:var(--mint)}
+.adm-chks{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.adm-chk{position:relative;cursor:pointer}
+.adm-chk input{position:absolute;opacity:0}
+.adm-chk span{display:inline-block;padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--muted);transition:all .2s}
+.adm-chk input:checked+span{background:var(--purple);border-color:var(--purple);color:var(--gray);box-shadow:0 0 16px rgba(96,69,244,.5)}
+.adm-chk input:focus-visible+span{outline:2px solid var(--mint);outline-offset:2px}
+.adm-err{min-height:1em;margin:0;color:var(--mint);font-weight:600}
+.adm-err:empty{display:none}
+.adm-actions{display:flex;gap:10px;flex-wrap:wrap}
+.adm-side{position:sticky;top:90px;display:grid;gap:14px;min-width:0}
+.adm-prev{border-radius:16px;overflow:hidden;border:1px solid rgba(83,230,212,.35);background:var(--black);box-shadow:0 0 30px rgba(96,69,244,.25)}
+.adm-media{position:relative;aspect-ratio:16/9;background:#0a0e10}
+.adm-media img,.adm-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.adm-media img[src=""]{opacity:0}
+.adm-media video{opacity:0;transition:opacity .4s}
+.adm-media video.show{opacity:1}
+.adm-prev-b{display:grid;gap:2px;padding:12px 14px}
+.adm-prev-b small{color:var(--muted)}
+.adm-sub{margin:6px 0 0;font-size:15px}
+.adm-list{display:grid;gap:8px}
+.adm-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:8px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.adm-row.on{border-color:var(--mint)}
+.adm-row img{width:56px;height:32px;object-fit:cover;border-radius:6px}
+.adm-row b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-row small{display:block;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-row .icon-btn{width:34px;height:34px}
+.adm-row .icon-btn.danger{width:auto;padding:0 10px;color:var(--black);background:var(--mint);font-weight:700;font-size:12px}
+.adm-empty{color:var(--muted);font-size:13.5px;line-height:1.5;margin:0}
+@media (max-width:1100px){.adm-grid{grid-template-columns:1fr}.adm-side{position:static}}
+@media (max-width:560px){.adm-form fieldset{grid-template-columns:1fr;padding:14px}}
+/* contenido inferior cabe dentro del borde diagonal (borde en x≈236 abajo) */
+body.side-open .sidebar .plat-grid{width:208px}
+body.side-open .admin-link{width:208px}
+body.side-open .sidebar .menu-btn{width:208px}
+@media (max-width:860px){.admin-link{width:208px}}
+/* logo real (imagen) — reemplazable en assets/ */
+.brand-mark{width:auto;height:auto;background:none;border-radius:0;box-shadow:none;animation:none}
+.brand-mark img{display:block;height:24px;width:auto;filter:drop-shadow(0 0 8px rgba(96,69,244,.6)) drop-shadow(0 0 3px rgba(83,230,212,.35))}
+.sidebar .brand-mark img{width:46px;height:auto}
+.brand-word{display:block;height:17px;width:auto}
+.brand-text small{margin-top:5px}
+.brand-mobile{gap:10px}
+.brand-mobile .brand-mark{width:auto;height:auto}
+.brand-mobile .brand-mark img{height:20px}
+.brand-mobile .brand-word{height:14px}
+.brand{align-items:center}
+@media (max-width:480px){.brand-mobile .brand-word{display:none}.brand-mobile .brand-mark img{height:22px}}

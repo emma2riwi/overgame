@@ -6,6 +6,8 @@
 <title>Overgame · Nexus Hub</title>
 <meta name="description" content="Encuentra qué jugar según cómo te sientes, pruébalo gratis y no te pierdas ningún lanzamiento.">
 <meta name="theme-color" content="#0F1417">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -16,14 +18,14 @@
   <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
     <svg class="side-shape" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true">
       <defs><linearGradient id="sideFill" x1="0" y1="0" x2="0" y2="1"><stop offset=".42" stop-color="#0F1417" stop-opacity=".97"/><stop offset="1" stop-color="#6045F4" stop-opacity=".9"/></linearGradient></defs>
-      <path d="M0 0H300L274 560L198 735L172 1000H0Z" fill="url(#sideFill)"/>
-      <path class="edge" d="M300 0L274 560L198 735L172 1000"/>
-      <path class="edge2" d="M262 640L214 760L192 1000"/>
+      <path d="M0 0H300L292 700L252 860L236 1000H0Z" fill="url(#sideFill)"/>
+      <path class="edge" d="M300 0L292 700L252 860L236 1000"/>
+      <path class="edge2" d="M280 760L260 870L248 1000"/>
     </svg>
     <button class="side-toggle" data-side-toggle aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú lateral"><svg><use href="#i-menu"/></svg></button>
     <a class="brand" href="#/inicio" data-menu aria-label="Abrir menú principal de Overgame" title="Menú principal (M)">
-      <span class="brand-mark"><svg viewBox="0 0 24 24"><use href="#i-pad"/></svg></span>
-      <span class="brand-text"><b>OVER<em>GAME</em></b><small>NEXUS HUB</small></span>
+      <span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span>
+      <span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame"><small>NEXUS HUB</small></span>
     </a>
     <p class="nav-label">Principal</p>
     <nav class="nav">
@@ -44,13 +46,14 @@
       <a href="#/explorar?p=switch"><svg><use href="#i-switch"/></svg>Switch</a>
       <a href="#/explorar?p=mobile" class="wide"><svg><use href="#i-phone"/></svg>Móvil (iOS / Android)</a>
     </div>
+    <a class="admin-link" href="#/admin" data-route="admin"><svg><use href="#i-admin"/></svg><span>Admin · Agregar juegos</span></a>
     <button class="menu-btn" data-menu><svg><use href="#i-grid"/></svg><span>Menú principal</span><kbd>M</kbd></button>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <button class="icon-btn side-toggle-m" data-side-toggle aria-label="Abrir menú lateral"><svg><use href="#i-menu"/></svg></button>
-      <a class="brand brand-mobile" href="#/inicio" data-menu aria-label="Abrir menú principal"><span class="brand-mark"><svg viewBox="0 0 24 24"><use href="#i-pad"/></svg></span><b>OVER<em>GAME</em></b></a>
+      <a class="brand brand-mobile" href="#/inicio" data-menu aria-label="Abrir menú principal"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span><img class="brand-word" src="assets/og-word.png" alt="Overgame"></a>
       <label class="search">
         <svg><use href="#i-search"/></svg>
         <input id="search" type="search" placeholder="Buscar juegos, demos, géneros…" autocomplete="off">
@@ -61,6 +64,7 @@
     <main id="view" tabindex="-1"></main>
   </div>
 
+  <div class="side-scrim" data-side-close></div>
   <nav class="tabbar" aria-label="Navegación móvil">
     <a href="#/inicio" data-route="inicio"><svg><use href="#i-compass"/></svg>Inicio</a>
     <a href="#/mood" data-route="mood"><svg><use href="#i-pulse"/></svg>Mood</a>
@@ -69,7 +73,6 @@
     <a href="#/calendario" data-route="calendario"><svg><use href="#i-cal"/></svg>Agenda</a>
   </nav>
 </div>
-<div class="side-scrim" data-side-close></div>
 
 <div class="modal" id="modal" hidden>
   <div class="modal-backdrop" data-close></div>
@@ -79,6 +82,8 @@
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-admin" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="M12 9v6M9 12h6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></symbol>
     <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="12.5" rx="2"/><path d="M3.5 12.5h17M12 8v12.5M12 8c-1.5-3.5-6-4-6-1.5S10 8 12 8Zm0 0c1.5-3.5 6-4 6-1.5S14 8 12 8Z"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>

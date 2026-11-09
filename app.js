@@ -1,7 +1,8 @@
 /* Overgame · Nexus Hub — app de una sola página (vanilla JS) */
 (() => {
 'use strict';
-const GAMES = window.OG_GAMES || [];
+const CUSTOM = (() => { try { return JSON.parse(localStorage.getItem('og.custom') || '[]'); } catch { return []; } })();
+const GAMES = [...CUSTOM, ...(window.OG_GAMES || [])];
 const BY_ID = new Map(GAMES.map(g => [g.id, g]));
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -82,6 +83,7 @@ const cardHTML = g => `
   </article>`;
 
 /* ---------- tiendas (Steam real; resto referencia simulada) ---------- */
+const demoUrl = g => /^https?:/.test(String(g.demo)) ? g.demo : `https://store.steampowered.com/app/${g.demo}`;
 const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967295; };
 function stores(g) {
   const q = encodeURIComponent(g.name);
@@ -100,16 +102,21 @@ function stores(g) {
   if (g.plats.includes('xbox')) sim('xbox', 'Xbox Store', `https://www.xbox.com/es-CO/search?q=${q}`, 1.05);
   if (g.plats.includes('switch')) sim('eshop', 'Nintendo eShop', `https://www.nintendo.com/us/search/#q=${q}`, 1.1);
   if (g.plats.includes('mobile')) { sim('ios', 'App Store', `https://apps.apple.com/us/search?term=${q}`, .4); sim('gp', 'Google Play', `https://play.google.com/store/search?q=${q}&c=apps`, .4); }
+  if (g.custom) {
+    list.length = 0;
+    for (const [k, n] of STORE_KEYS) if (g.links?.[k]) list.push({ k, n, url: g.links[k], price: g.price, base: g.base, off: g.off, real: true });
+  }
   const priced = list.filter(s => s.price != null);
   const best = priced.length ? priced.reduce((a, b) => b.price < a.price ? b : a) : null;
   if (best && priced.length > 1) best.best = true;
   return { list, best };
 }
+const STORE_KEYS = [['steam','Steam'],['epic','Epic Games'],['ps','PlayStation Store'],['xbox','Xbox Store'],['eshop','Nintendo eShop'],['ios','App Store'],['gp','Google Play'],['web','Sitio oficial']];
 function storesHTML(g, max = 9) {
   const { list } = stores(g);
   return `<div class="stores">${list.slice(0, max).map(s => `
     <a class="store ${s.best ? 'best' : ''}" href="${s.url}" target="_blank" rel="noopener">
-      <span class="nm">${s.n}<span class="flags">${s.real ? '<small>PRECIO REAL</small>' : '<small>REF.</small>'}${s.best ? '<span class="ofr">MEJOR PRECIO</span>' : s.off ? `<span class="ofr">-${s.off}%</span>` : ''}</span></span>
+      <span class="nm">${s.n}<span class="flags">${s.real ? `<small>${g.custom ? 'LINK DIRECTO' : 'PRECIO REAL'}</small>` : '<small>REF.</small>'}${s.best ? '<span class="ofr">MEJOR PRECIO</span>' : s.off ? `<span class="ofr">-${s.off}%</span>` : ''}</span></span>
       <span class="pr">${s.off && s.base ? `<s>${money(s.base)}</s>` : ''}${money(s.price)}</span>${icon('ext')}
     </a>`).join('')}</div>`;
 }
@@ -153,7 +160,7 @@ function openPeek(card) {
       <div class="chips"><span class="chip">${LEVEL[g.level]}</span>${g.modes.map(m => `<span class="chip">${MODE[m]}</span>`).join('')}</div>
       ${platsHTML(g)}
       <div class="peek-actions">
-        ${g.demo ? `<a class="btn btn-mint btn-sm" href="https://store.steampowered.com/app/${g.demo}" target="_blank" rel="noopener">${icon('play')}Probar demo</a>` : ''}
+        ${g.demo ? `<a class="btn btn-mint btn-sm" href="${demoUrl(g)}" target="_blank" rel="noopener">${icon('play')}Probar demo</a>` : ''}
         <button class="btn ${g.demo ? 'btn-ghost' : 'btn-mint'} btn-sm" data-open="${g.id}">Ver ficha${icon('arrow')}</button>
         <button class="btn btn-ghost btn-sm fav-btn ${favs.has(g.id) ? 'on' : ''}" data-fav="${g.id}" aria-label="Guardar en favoritos" aria-pressed="${favs.has(g.id)}">${icon('heart')}</button>
       </div>
@@ -240,8 +247,9 @@ function openModal(id) {
       <div style="display:flex;flex-direction:column;gap:12px">
         <span class="meta-line">Comparativa de tiendas</span>
         ${storesHTML(g)}
-        <p class="note">Steam: precio real (8 nov 2026). “REF.”: precio de referencia del prototipo, sin conexión a esa tienda.</p>
-        ${g.demo ? `<a class="btn btn-mint" href="https://store.steampowered.com/app/${g.demo}" target="_blank" rel="noopener">${icon('play')}Descargar demo gratis en Steam</a>`
+        <p class="note">${g.custom ? 'Juego agregado desde Admin: links directos que cargaste tú.' : 'Steam: precio real (8 nov 2026). “REF.”: precio de referencia del prototipo, sin conexión a esa tienda.'}</p>
+        ${g.custom && videoKind(g.video) === 'yt' ? `<a class="btn btn-ghost" href="${esc(g.video)}" target="_blank" rel="noopener">${icon('play')}Ver tráiler en YouTube</a>` : ''}
+        ${g.demo ? `<a class="btn btn-mint" href="${demoUrl(g)}" target="_blank" rel="noopener">${icon('play')}${g.custom ? 'Probar demo gratis' : 'Descargar demo gratis en Steam'}</a>`
           : best ? `<a class="btn btn-mint" href="${best.url}" target="_blank" rel="noopener">${icon('store')}${g.soon ? 'Reservar' : 'Comprar'} en ${best.n} · ${money(best.price)}</a>` : ''}
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost ${favs.has(g.id) ? 'on' : ''}" style="flex:1" data-fav="${g.id}" aria-pressed="${favs.has(g.id)}">${icon('heart')}Favorito</button>
@@ -492,7 +500,7 @@ function resultsHTML() {
           <p class="why">${whyText(g)}</p>
           ${storesHTML(g, 3)}
           <div class="result-actions">
-            ${g.demo ? `<a class="btn btn-mint btn-sm" href="https://store.steampowered.com/app/${g.demo}" target="_blank" rel="noopener">${icon('play')}Demo gratis</a>` : `<button class="btn btn-mint btn-sm" data-open="${g.id}">Ver ficha ${icon('arrow')}</button>`}
+            ${g.demo ? `<a class="btn btn-mint btn-sm" href="${demoUrl(g)}" target="_blank" rel="noopener">${icon('play')}Demo gratis</a>` : `<button class="btn btn-mint btn-sm" data-open="${g.id}">Ver ficha ${icon('arrow')}</button>`}
             <button class="btn btn-ghost btn-sm fav-btn ${favs.has(g.id) ? 'on' : ''}" data-fav="${g.id}" aria-label="Guardar ${esc(g.name)}" aria-pressed="${favs.has(g.id)}">${icon('heart')}</button>
           </div>
         </div>
@@ -636,7 +644,7 @@ function detailHTML(g) {
       <div><div class="sec-head" style="margin-bottom:10px"><h3 style="font-size:18px">Comparativa de tiendas oficiales</h3></div>${storesHTML(g)}
       <p class="note" style="margin-top:8px">Steam: precio real (8 nov 2026). “REF.”: referencia del prototipo. Bonos de reserva: se muestran en la página de cada tienda.</p></div>
       <div class="detail-actions">
-        ${g.demo ? `<a class="btn btn-mint" href="https://store.steampowered.com/app/${g.demo}" target="_blank" rel="noopener">${icon('play')}Probar la demo gratis</a>` : ''}
+        ${g.demo ? `<a class="btn btn-mint" href="${demoUrl(g)}" target="_blank" rel="noopener">${icon('play')}Probar la demo gratis</a>` : ''}
         ${best && best.price != null ? `<a class="btn ${g.demo ? 'btn-ghost' : 'btn-mint'}" href="${best.url}" target="_blank" rel="noopener">${icon('store')}${d > 0 ? 'Pre-ordenar' : 'Comprar'} en ${best.n} (${money(best.price)})</a>`
           : `<a class="btn ${g.demo ? 'btn-ghost' : 'btn-mint'}" href="https://store.steampowered.com/app/${g.id}" target="_blank" rel="noopener">${icon('store')}Añadir a deseados en Steam</a>`}
         <button class="btn btn-purple ${alerts.has(g.id) ? 'on' : ''}" data-alert="${g.id}" data-label aria-pressed="${alerts.has(g.id)}">${icon('bell')}<span>${alerts.has(g.id) ? 'Alerta activa' : 'Activar alerta de precio'}</span></button>
@@ -706,7 +714,7 @@ function showIntro() {
     <div class="intro-bg"><img alt=""><img alt=""><video muted loop playsinline></video><video muted loop playsinline></video></div>
     <div class="intro-shade"></div>
     <header class="intro-top" style="--i:0">
-      <span class="brand"><span class="brand-mark"><svg viewBox="0 0 24 24"><use href="#i-pad"/></svg></span><span class="brand-text"><b>OVER<em>GAME</em></b><small>NEXUS HUB</small></span></span>
+      <span class="brand"><span class="brand-mark"><img src="assets/og-mark.png" alt="" width="417" height="208"></span><span class="brand-text"><img class="brand-word" src="assets/og-word.png" alt="Overgame"><small>NEXUS HUB</small></span></span>
       <button class="intro-skip" data-go="${MENU[intro.i].r}">Entrar ${icon('arrow')}</button>
     </header>
     <div class="intro-main">
@@ -1022,7 +1030,132 @@ if (FINE) document.addEventListener('pointermove', e => {
 }, { passive: true });
 
 /* ---------- router ---------- */
-const VIEWS = { panel: viewPanel, inicio: viewInicio, mood: viewMood, explorar: viewExplorar, demos: viewDemos, calendario: viewCalendario, biblioteca: viewBiblioteca };
+/* ---------- admin: agregar juegos propios (se guardan en este navegador) ---------- */
+const ADM_PLATS = [['pc','PC'],['ps5','PS5'],['xbox','Xbox'],['switch','Switch'],['mobile','Móvil']];
+const ADM_MOODS = [['adrenalina','Adrenalina'],['historia','Historia'],['relax','Relajarme'],['rapido','Ratos cortos']];
+let admEdit = null, admDel = null;
+function saveCustom() { store.set('custom', CUSTOM); }
+function videoKind(u) {
+  if (!u) return null;
+  if (/youtu\.?be/.test(u)) return 'yt';
+  if (/\.m3u8(\?|$)/i.test(u)) return 'hls';
+  return 'file';
+}
+function applyVideo(g, u) {
+  delete g.mt; delete g.mp4; delete g.hls; g.video = u || '';
+  const k = videoKind(u);
+  if (k === 'hls') g.hls = u; else if (k === 'file') { g.mt = u; g.mp4 = u; }
+}
+function viewAdmin() {
+  const g = admEdit ? CUSTOM.find(x => x.id === admEdit) : null;
+  const v = (k, d = '') => esc(g ? (g[k] ?? d) : d);
+  const has = (k, x) => g ? g[k].includes(x) : false;
+  const box = (name, opts, key, def) => opts.map(([k, t]) => `<label class="adm-chk"><input type="checkbox" name="${name}" value="${esc(k)}" ${(g ? has(key, k) : def === k) ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('');
+  view.innerHTML = `
+  <section class="adm">
+    <div class="sec-head"><div><h1 class="adm-h">Admin · Catálogo</h1><p>Agrega juegos con su tráiler y los links de cada tienda. Se guardan en este navegador; usa Exportar para pasarlos a otro equipo.</p></div>
+      <div class="adm-io"><button class="btn btn-ghost btn-sm" id="admExport">Exportar JSON</button><label class="btn btn-ghost btn-sm">Importar<input type="file" id="admImport" accept="application/json" hidden></label></div></div>
+    <div class="adm-grid">
+      <form class="adm-form" id="admForm" novalidate>
+        <fieldset><legend>${g ? 'Editando: ' + esc(g.name) : 'Juego nuevo'}</legend>
+          <label class="f">Nombre *<input name="name" required maxlength="80" value="${v('name')}"></label>
+          <label class="f">Estudio<input name="dev" maxlength="60" value="${v('dev')}"></label>
+          <label class="f full">Descripción<textarea name="desc" rows="3" maxlength="600">${v('desc')}</textarea></label>
+          <label class="f full">Imagen de portada (URL) *<input name="img" type="url" required placeholder="https://…/portada.jpg" value="${v('img')}"></label>
+          <label class="f full">Video / tráiler (URL)<input name="video" type="url" placeholder=".mp4, .webm, .m3u8 o YouTube" value="${v('video')}"><small class="hint" id="vidHint"></small></label>
+          <label class="f">Fecha de lanzamiento<input name="date" type="date" value="${v('date')}"></label>
+          <label class="f">Precio US$ <small>(vacío = por anunciar · 0 = gratis)</small><input name="base" type="number" min="0" step="0.01" value="${g && g.base != null ? g.base : ''}"></label>
+          <label class="f">Descuento %<input name="off" type="number" min="0" max="100" value="${v('off', 0)}"></label>
+          <label class="f">Metacritic<input name="meta" type="number" min="0" max="100" value="${g && g.meta ? g.meta : ''}"></label>
+          <label class="f">Exigencia<select name="level">${[1,2,3].map(n => `<option value="${n}" ${(g ? g.level : 2) === n ? 'selected' : ''}>${LEVEL[n]}</option>`).join('')}</select></label>
+          <label class="f">Géneros <small>(separados por coma)</small><input name="genres" list="admGenres" value="${g ? esc(g.genres.join(', ')) : ''}" placeholder="RPG, Acción"><datalist id="admGenres">${GENRES.map(x => `<option value="${esc(x)}">`).join('')}</datalist></label>
+        </fieldset>
+        <fieldset><legend>Plataformas</legend><div class="adm-chks">${box('plats', ADM_PLATS, 'plats', 'pc')}</div></fieldset>
+        <fieldset><legend>Modo de juego</legend><div class="adm-chks">${box('modes', Object.entries(MODE), 'modes', 'solo')}</div></fieldset>
+        <fieldset><legend>Ánimo (Mood Finder)</legend><div class="adm-chks">${box('moods', ADM_MOODS, 'moods', 'adrenalina')}</div></fieldset>
+        <fieldset><legend>Links</legend>
+          ${STORE_KEYS.map(([k, n]) => `<label class="f">${esc(n)}<input name="l_${k}" type="url" placeholder="https://" value="${esc(g?.links?.[k] || '')}"></label>`).join('')}
+          <label class="f full">Demo jugable / descarga de demo<input name="demo" type="url" placeholder="https://" value="${esc(g && /^http/.test(String(g.demo)) ? g.demo : '')}"></label>
+        </fieldset>
+        <p class="adm-err" id="admErr" role="alert"></p>
+        <div class="adm-actions"><button class="btn btn-mint" type="submit">${icon('check')}${g ? 'Guardar cambios' : 'Agregar al catálogo'}</button>${g ? '<button class="btn btn-ghost" type="button" id="admCancel">Cancelar</button>' : ''}</div>
+      </form>
+      <aside class="adm-side">
+        <div class="adm-prev"><div class="adm-media"><img id="pvImg" alt="" src="${v('img')}"><video id="pvVid" muted loop playsinline></video></div>
+          <div class="adm-prev-b"><b id="pvName">${v('name') || 'Vista previa'}</b><small id="pvMeta">${g ? esc(g.genres.join(' · ')) : 'Así se verá la tarjeta'}</small></div></div>
+        <h3 class="adm-sub">Tus juegos (${CUSTOM.length})</h3>
+        <div class="adm-list">${CUSTOM.length ? CUSTOM.map(x => `
+          <div class="adm-row ${x.id === admEdit ? 'on' : ''}"><img src="${esc(x.img)}" alt="" loading="lazy"><div><b>${esc(x.name)}</b><small>${esc(x.genres.join(' · ') || 'Sin género')} · ${fmtDate(x.date)}</small></div>
+            <button class="icon-btn" data-adm-open="${x.id}" title="Ver ficha" aria-label="Ver ficha de ${esc(x.name)}">${icon('arrow')}</button>
+            <button class="icon-btn" data-adm-edit="${x.id}" title="Editar" aria-label="Editar ${esc(x.name)}">${icon('edit')}</button>
+            <button class="icon-btn ${admDel === x.id ? 'danger' : ''}" data-adm-del="${x.id}" title="${admDel === x.id ? 'Toca otra vez para borrar' : 'Borrar'}" aria-label="Borrar ${esc(x.name)}">${admDel === x.id ? '¿Sí?' : icon('x')}</button></div>`).join('')
+          : '<p class="adm-empty">Todavía no has agregado juegos. Lo que agregues aparece en Inicio, Explorar, Mood Finder, Calendario y Demos.</p>'}</div>
+      </aside>
+    </div>
+  </section>`;
+  const f = $('#admForm'), pv = $('#pvVid'), hint = $('#vidHint');
+  const preview = () => {
+    $('#pvImg').src = f.img.value || ''; $('#pvName').textContent = f.name.value || 'Vista previa';
+    $('#pvMeta').textContent = f.genres.value || 'Así se verá la tarjeta';
+    const u = f.video.value.trim(), k = videoKind(u);
+    hint.textContent = k === 'yt' ? 'YouTube no se puede reproducir al pasar el mouse: se mostrará como botón "Ver tráiler". Para el efecto hover usa un .mp4, .webm o .m3u8.' : '';
+    const tmp = {}; applyVideo(tmp, u);
+    if (pv.dataset.u !== u) { pv.dataset.u = u; pv.classList.remove('show'); if (k && k !== 'yt') { pv.addEventListener('playing', () => pv.classList.add('show'), { once: true }); loadVideo(pv, tmp); } else unloadVideo(pv); }
+  };
+  f.addEventListener('input', () => { clearTimeout(f._t); f._t = setTimeout(preview, 350); });
+  preview();
+  f.addEventListener('submit', e => {
+    e.preventDefault(); clearTimeout(f._t);
+    const fd = new FormData(f), err = $('#admErr');
+    const name = fd.get('name').trim(), img = fd.get('img').trim();
+    const plats = fd.getAll('plats'), modes = fd.getAll('modes'), moods = fd.getAll('moods');
+    const bad = !name ? 'Falta el nombre.' : !/^https?:\/\//.test(img) ? 'La portada debe ser un link que empiece por https://' : !plats.length ? 'Elige al menos una plataforma.' : !modes.length ? 'Elige al menos un modo de juego.' : !moods.length ? 'Elige al menos un ánimo.' : '';
+    err.textContent = bad; if (bad) return;
+    const base = fd.get('base') === '' ? null : Math.max(0, +fd.get('base'));
+    const off = Math.min(100, Math.max(0, +fd.get('off') || 0));
+    const date = fd.get('date') || null;
+    const links = {}; STORE_KEYS.forEach(([k]) => { const u = fd.get('l_' + k).trim(); if (/^https?:\/\//.test(u)) links[k] = u; });
+    const x = g || { id: Date.now(), custom: true };
+    Object.assign(x, { name, img, dev: fd.get('dev').trim() || 'Independiente', desc: fd.get('desc').trim(), date,
+      soon: !!date && daysTo(date) > 0, base, off: base ? off : 0, price: base == null ? null : Math.round(base * (100 - (base ? off : 0))) / 100,
+      meta: +fd.get('meta') || null, level: +fd.get('level') || 2, plats, modes, moods,
+      genres: fd.get('genres').split(',').map(t => t.trim()).filter(Boolean).slice(0, 4), links, demo: /^https?:\/\//.test(fd.get('demo').trim()) ? fd.get('demo').trim() : null });
+    applyVideo(x, /^https?:\/\//.test(fd.get('video').trim()) ? fd.get('video').trim() : '');
+    if (!g) { CUSTOM.unshift(x); GAMES.unshift(x); BY_ID.set(x.id, x); }
+    saveCustom(); admEdit = null; admDel = null;
+    toast(g ? 'Cambios guardados' : `${name} ya está en el catálogo`);
+    viewAdmin(); scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  $('#admCancel')?.addEventListener('click', () => clearTimeout(f._t));
+  $('#admCancel')?.addEventListener('click', () => { admEdit = null; viewAdmin(); });
+  view.querySelectorAll('[data-adm-edit]').forEach(b => b.onclick = () => { admEdit = +b.dataset.admEdit; admDel = null; viewAdmin(); scrollTo({ top: 0, behavior: 'smooth' }); });
+  view.querySelectorAll('[data-adm-open]').forEach(b => b.onclick = () => openModal(+b.dataset.admOpen));
+  view.querySelectorAll('[data-adm-del]').forEach(b => b.onclick = () => {
+    const id = +b.dataset.admDel;
+    if (admDel !== id) { admDel = id; viewAdmin(); return; }
+    const i = CUSTOM.findIndex(x => x.id === id), gi = GAMES.findIndex(x => x.id === id);
+    const nm = CUSTOM[i]?.name;
+    if (i > -1) CUSTOM.splice(i, 1); if (gi > -1) GAMES.splice(gi, 1); BY_ID.delete(id);
+    favs.delete(id); alerts.delete(id); store.set('favs', [...favs]); store.set('alerts', [...alerts]);
+    if (admEdit === id) admEdit = null; admDel = null; saveCustom(); syncBadges(); toast(`${nm} borrado`); viewAdmin();
+  });
+  $('#admExport').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(CUSTOM, null, 2)], { type: 'application/json' }));
+    a.download = 'overgame-juegos.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $('#admImport').onchange = async e => {
+    try {
+      const arr = JSON.parse(await e.target.files[0].text()); if (!Array.isArray(arr)) throw 0;
+      let n = 0;
+      const ok = u => typeof u === 'string' && /^https?:\/\//.test(u);
+      for (const x of arr) if (x && x.name && ok(x.img) && Array.isArray(x.plats) && Array.isArray(x.modes) && Array.isArray(x.moods) && Array.isArray(x.genres) && !BY_ID.has(x.id)) {
+        x.custom = true; x.links = Object.fromEntries(Object.entries(x.links || {}).filter(([, u]) => ok(u))); if (!ok(x.demo)) x.demo = null; applyVideo(x, ok(x.video) ? x.video : ''); x.id = +x.id || Date.now() + n; CUSTOM.push(x); GAMES.unshift(x); BY_ID.set(x.id, x); n++; }
+      saveCustom(); toast(`${n} juego${n === 1 ? '' : 's'} importado${n === 1 ? '' : 's'}`); viewAdmin();
+    } catch { toast('Ese archivo no es un JSON de Overgame'); }
+  };
+}
+const VIEWS = { admin: viewAdmin, panel: viewPanel, inicio: viewInicio, mood: viewMood, explorar: viewExplorar, demos: viewDemos, calendario: viewCalendario, biblioteca: viewBiblioteca };
 function route() {
   const [path, qs] = location.hash.replace(/^#\/?/, '').split('?');
   return { name: VIEWS[path] ? path : 'inicio', params: new URLSearchParams(qs || '') };
@@ -1046,7 +1179,7 @@ function doRender() {
   if (name === 'inicio') setAmbient(BY_ID.get(FEATURED));
   moveNavIndicator();
   if (name !== 'explorar' && document.activeElement !== search) scrollTo(0, 0);
-  document.title = { panel:'Mi panel · Overgame', inicio:'Overgame · Nexus Hub', mood:'Game Mood Finder · Overgame', explorar:'Explorar · Overgame', demos:'Centro de Demos · Overgame', calendario:'Calendario & Preventas · Overgame', biblioteca:'Biblioteca · Overgame' }[name];
+  document.title = { panel:'Mi panel · Overgame', inicio:'Overgame · Nexus Hub', mood:'Game Mood Finder · Overgame', explorar:'Explorar · Overgame', demos:'Centro de Demos · Overgame', calendario:'Calendario & Preventas · Overgame', biblioteca:'Biblioteca · Overgame', admin:'Admin · Overgame' }[name];
 }
 addEventListener('hashchange', render);
 syncBadges();
