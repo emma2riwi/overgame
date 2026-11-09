@@ -63,7 +63,9 @@ Antes de escribir código, hazme las preguntas que necesites para entender la id
   - **Abierto solo cuando el usuario toca el botón de menú:** se expande a 300 px.
   - **Forma estilo GameHub:** el panel abierto tiene un borde derecho diagonal neón menta. Es recto arriba y a partir de dos tercios se va metiendo hacia la izquierda en dos tramos. Lleva una segunda línea morada paralela por fuera, abajo.
   - **Relleno:** negro semitransparente con un degradado morado muy gradual (casi nada arriba, más intenso abajo) y un brillo morado tenue en la esquina inferior izquierda. Se funde con el fondo de la página, sin cortes bruscos.
-  - **Integrado en escritorio:** al abrirse, el menú EMPUJA el contenido hacia la derecha (no lo tapa ni oscurece la página) y se queda abierto mientras navegas, como parte de la plataforma. En el celular es un cajón que se superpone y se cierra al elegir una opción.
+  - **Cerrado por defecto (riel de íconos).** Al pasar el cursor por un ícono, o al llegar con Tab, aparece un globo a la derecha, alineado con el ícono. El globo tiene fondo oscuro, borde menta y una flechita, y muestra el nombre de la sección más una línea que dice a dónde lleva (por ejemplo: "Game Mood Finder · Cuatro preguntas y tres juegos para cómo te sientes"). El globo no aparece con el menú abierto ni en el celular.
+  - **Integrado en escritorio:** al abrirse con el botón de menú, EMPUJA el contenido hacia la derecha (no lo tapa ni oscurece la página) y se queda abierto mientras navegas, como parte de la plataforma. En el celular es un cajón que se superpone y se cierra al elegir una opción.
+  - **Sin contornos de más:** la regla global de íconos (`svg{stroke:currentColor}`) no debe aplicarse a la forma de fondo del menú. Si se aplica, aparece una línea blanca arriba y a la izquierda.
   - **Que nada cruce el borde:** todo el contenido del panel abierto (logo, ítems, plataformas, Admin, Menú principal) mide como máximo 212 px de ancho, para que ningún texto ni botón cruce la diagonal en ninguna altura de pantalla. El texto conserva el mismo color sobre el degradado.
   - **Ítem activo:** una "píldora" morada con brillo que se desliza entre opciones. Se recoloca al abrir o cerrar el menú.
   - El fondo oscuro de la página que aparece al abrirlo va DEBAJO del menú y sin desenfoque.
@@ -123,6 +125,7 @@ Al salir, vuelve a su sitio con la misma suavidad, sin parpadeos ni zonas negras
    - cuenta regresiva
    - comparación de precios entre Steam, Epic, PlayStation Store, Xbox, Nintendo eShop, App Store y Google Play, con "MEJOR PRECIO" marcado
    - botón de alerta
+   - en escritorio: la línea de tiempo a la izquierda y la ficha del juego elegido a la derecha. La ficha queda FIJA debajo de la barra superior mientras bajas por la lista (position: sticky, con scroll propio si es más alta que la pantalla), para que la columna derecha nunca quede vacía. En el celular la ficha va debajo
 6. **Biblioteca:** favoritos y alertas.
 7. **Mi panel** (dashboard del jugador) con estadísticas reales del navegador:
    - nombre de jugador editable

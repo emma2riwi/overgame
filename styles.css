@@ -1022,8 +1022,43 @@ body.side-open .sidebar .brand-mark img{width:42px}
 /* ===== menú integrado (escritorio): empuja el contenido en vez de taparlo; sin oscurecer la página ===== */
 @media (min-width:861px){
   .app{transition:padding-left .5s cubic-bezier(.16,1,.3,1)}
-  body.side-open .app{padding-left:300px}
-  body.side-open .side-scrim{opacity:0;pointer-events:none}
+  body.menu-dock.side-open .app{padding-left:300px}
+  body.menu-dock.side-open .side-scrim{opacity:0;pointer-events:none}
   .side-shape .edge{filter:drop-shadow(0 0 4px rgba(83,230,212,.6));opacity:.85}
   .side-shape .edge2{opacity:.6}
+}
+
+/* selector de versión del menú (Integrado / Flotante) */
+.menu-mode{display:none;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:10px;border:1px solid rgba(83,230,212,.2);background:rgba(15,20,23,.55)}
+body.side-open .menu-mode{display:grid}
+.menu-mode button{height:30px;border-radius:7px;font:600 12px/1 Outfit,sans-serif;color:var(--muted);transition:background .25s,color .25s}
+.menu-mode button:hover{color:var(--gray)}
+.menu-mode button[aria-pressed="true"]{background:var(--purple);color:var(--gray);box-shadow:0 0 14px rgba(96,69,244,.45)}
+@media (max-width:860px){body.side-open .menu-mode{display:none}}
+/* flotante: panel translúcido encima de la página (se alcanza a ver lo de atrás, efecto vidrio) */
+body.menu-float .side-shape path:first-of-type{fill-opacity:.5}
+body.menu-float.side-open .side-scrim{background:rgba(15,20,23,.18)}
+body.menu-float.side-open .sidebar .nav a span,body.menu-float.side-open .sidebar .nav-label span,body.menu-float.side-open .plat-grid a,body.menu-float.side-open .admin-link span,body.menu-float.side-open .menu-btn span{text-shadow:0 1px 2px rgba(15,20,23,.9),0 0 12px rgba(15,20,23,.8)}
+body.menu-float.side-open .plat-grid a,body.menu-float.side-open .admin-link,body.menu-float.side-open .menu-btn,body.menu-float.side-open .menu-mode{background:rgba(15,20,23,.35)}
+/* el relleno del menú no lleva contorno (la regla global de íconos le ponía una línea blanca arriba y a la izquierda) */
+.side-shape path{stroke:none}
+.side-shape path.edge{stroke:var(--mint)}
+.side-shape path.edge2{stroke:var(--purple)}
+
+/* globo del menú cerrado: dice a dónde lleva cada ícono */
+.rail-tip{position:fixed;left:calc(var(--rail) + 12px);top:0;z-index:90;display:grid;gap:3px;max-width:260px;padding:10px 14px;border-radius:12px;
+  background:rgba(15,20,23,.94);border:1px solid rgba(83,230,212,.45);box-shadow:0 10px 30px rgba(15,20,23,.6),0 0 22px rgba(96,69,244,.3);
+  pointer-events:none;opacity:0;transform:translate(-6px,-50%);transition:opacity .18s ease,transform .25s cubic-bezier(.16,1,.3,1)}
+.rail-tip::before{content:"";position:absolute;left:-6px;top:50%;width:10px;height:10px;background:inherit;border-left:1px solid rgba(83,230,212,.45);border-bottom:1px solid rgba(83,230,212,.45);transform:translateY(-50%) rotate(45deg)}
+.rail-tip.show{opacity:1;transform:translate(0,-50%)}
+.rail-tip b{font-size:14px;color:var(--gray)}
+.rail-tip span{font-size:12.5px;line-height:1.35;color:var(--muted)}
+@media (max-width:860px){.rail-tip{display:none}}
+@media (prefers-reduced-motion:reduce){.rail-tip{transition:opacity .1s}}
+
+/* calendario: el detalle acompaña al hacer scroll por la línea de tiempo (sin espacio muerto a la derecha) */
+@media (min-width:981px){
+  #detail{position:sticky;top:88px;max-height:calc(100dvh - 104px);overflow-y:auto;overscroll-behavior:contain;border-radius:20px;
+    scrollbar-width:thin;scrollbar-color:rgba(83,230,212,.35) transparent}
+  #detail .detail{min-height:100%}
 }

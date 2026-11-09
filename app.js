@@ -794,6 +794,15 @@ document.addEventListener('keydown', e => {
 $$('[data-menu]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); showIntro(); }));
 
 /* menú lateral: barra de íconos que se abre solo cuando tú quieras */
+/* dos versiones del menú lateral: integrado (empuja el contenido) o flotante (encima de la página) */
+let menuMode = new URLSearchParams(location.search).get('menu') === 'flotante' ? 'float' : 'dock';
+function setMenuMode(m) {
+  menuMode = m === 'float' ? 'float' : 'dock';
+  document.body.classList.toggle('menu-dock', menuMode === 'dock'); document.body.classList.toggle('menu-float', menuMode === 'float');
+  $$('[data-menu-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.menuMode === menuMode));
+  setTimeout(() => { moveNavIndicator(); dispatchEvent(new Event('resize')); }, 560);
+}
+setMenuMode(menuMode);
 function setSide(open) {
   document.body.classList.toggle('side-open', open);
   $$('[data-side-toggle]').forEach(b => { b.setAttribute('aria-expanded', open); b.setAttribute('aria-label', open ? 'Cerrar menú lateral' : 'Abrir menú lateral'); });
@@ -803,9 +812,45 @@ function setSide(open) {
 }
 document.addEventListener('click', e => {
   if (e.target.closest('[data-side-toggle]')) return setSide(!document.body.classList.contains('side-open'));
-  if (e.target.closest('[data-side-close]') || (e.target.closest('.sidebar a') && document.body.classList.contains('side-open') && matchMedia('(max-width:860px)').matches)) setSide(false);
+  if (e.target.closest('[data-side-close]') || (e.target.closest('.sidebar a') && document.body.classList.contains('side-open') && (matchMedia('(max-width:860px)').matches || menuMode === 'float'))) setSide(false);
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('side-open')) setSide(false); });
+
+/* menú cerrado: al pasar el cursor (o con Tab) por un ícono, un globo dice a dónde lleva */
+const RAIL_TIPS = {
+  panel: ['Mi panel', 'Tu nivel, desafíos, logros y lo que dejaste a medias'],
+  inicio: ['Inicio / Descubrir', 'Lo destacado, lo que sale esta semana y las ofertas'],
+  mood: ['Game Mood Finder', 'Cuatro preguntas y tres juegos para cómo te sientes'],
+  explorar: ['Explorar catálogo', 'Todo el catálogo con filtros por dispositivo, género y modo'],
+  demos: ['Centro de Demos', 'Juega en el navegador o baja la demo oficial gratis'],
+  calendario: ['Calendario & Preventas', 'Fechas de salida, cuenta regresiva y precios por tienda'],
+  biblioteca: ['Biblioteca / Favoritos', 'Tus favoritos y alertas de precio'],
+  admin: ['Admin', 'Agrega juegos con su tráiler y links de tiendas'],
+};
+const railTip = document.createElement('div');
+railTip.className = 'rail-tip'; railTip.setAttribute('role', 'tooltip'); railTip.id = 'railTip';
+document.body.appendChild(railTip);
+function tipFor(el) {
+  if (el.matches('.menu-btn')) return ['Menú principal', 'Pantalla de bienvenida con todas las secciones (tecla M)'];
+  if (el.matches('.side-toggle')) return ['Abrir menú', 'Muestra los nombres de cada sección'];
+  if (el.matches('.brand')) return ['Overgame', 'Volver al menú principal'];
+  return RAIL_TIPS[el.dataset.route] || null;
+}
+function showRailTip(el) {
+  if (document.body.classList.contains('side-open') || matchMedia('(max-width:860px)').matches) return hideRailTip();
+  const t = tipFor(el); if (!t) return hideRailTip();
+  railTip.innerHTML = `<b>${esc(t[0])}</b><span>${esc(t[1])}</span>`;
+  const r = el.getBoundingClientRect();
+  railTip.style.top = Math.round(r.top + r.height / 2) + 'px';
+  railTip.classList.add('show'); el.setAttribute('aria-describedby', 'railTip');
+}
+function hideRailTip() { railTip.classList.remove('show'); }
+const railSel = '.sidebar .nav a, .sidebar .admin-link, .sidebar .menu-btn, .sidebar .side-toggle, .sidebar .brand';
+document.addEventListener('mouseover', e => { const el = e.target.closest(railSel); if (el) showRailTip(el); });
+document.addEventListener('mouseout', e => { const el = e.target.closest(railSel); if (el && !el.contains(e.relatedTarget)) hideRailTip(); });
+document.addEventListener('focusin', e => { const el = e.target.closest(railSel); el && el.matches(':focus-visible') ? showRailTip(el) : hideRailTip(); });
+document.addEventListener('click', hideRailTip, true);
+$('.side-body')?.addEventListener('scroll', hideRailTip, { passive: true });
 
 /* indicador deslizante del menú lateral */
 function moveNavIndicator() {
