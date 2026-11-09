@@ -1004,3 +1004,26 @@ body.side-open .admin-link,body.side-open .sidebar .menu-btn{width:100%}
   .im.on .im-d{opacity:1;transform:translateX(10px)}
 }
 @media (max-width:860px){ .im-t{letter-spacing:-.01em} }
+
+/* ===== menú lateral: vuelve el borde diagonal estilo GameHub (con el contenido medido para no cruzarlo) ===== */
+body.side-open .sidebar{background:transparent;border-right-color:transparent;box-shadow:none}
+body.side-open .side-shape{opacity:1}
+.side-shape .edge{stroke-width:2.5}
+.side-shape .edge2{stroke-width:3;opacity:.9}
+/* el borde llega a x=236 abajo: todo el contenido abierto mide máximo 212 px (16 + 212 = 228) */
+body.side-open .side-head,body.side-open .side-body>*,body.side-open .side-foot>*{max-width:212px}
+body.side-open .side-body{width:244px}
+body.side-open .side-foot{width:212px;border-top-color:rgba(83,230,212,.25)}
+body.side-open .sidebar .nav a{padding-left:12px;padding-right:10px}
+body.side-open .sidebar .nav a span{font-size:14px}
+body.side-open .brand-word{width:150px}
+body.side-open .sidebar .brand-mark img{width:42px}
+
+/* ===== menú integrado (escritorio): empuja el contenido en vez de taparlo; sin oscurecer la página ===== */
+@media (min-width:861px){
+  .app{transition:padding-left .5s cubic-bezier(.16,1,.3,1)}
+  body.side-open .app{padding-left:300px}
+  body.side-open .side-scrim{opacity:0;pointer-events:none}
+  .side-shape .edge{filter:drop-shadow(0 0 4px rgba(83,230,212,.6));opacity:.85}
+  .side-shape .edge2{opacity:.6}
+}

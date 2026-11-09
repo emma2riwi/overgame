@@ -799,10 +799,11 @@ function setSide(open) {
   $$('[data-side-toggle]').forEach(b => { b.setAttribute('aria-expanded', open); b.setAttribute('aria-label', open ? 'Cerrar menú lateral' : 'Abrir menú lateral'); });
   if (open) setTimeout(() => $('.nav a.active, .nav a')?.focus({ preventScroll: true }), 60);
   moveNavIndicator(); setTimeout(moveNavIndicator, 120); setTimeout(moveNavIndicator, 560);
+  setTimeout(() => dispatchEvent(new Event('resize')), 560);
 }
 document.addEventListener('click', e => {
   if (e.target.closest('[data-side-toggle]')) return setSide(!document.body.classList.contains('side-open'));
-  if (e.target.closest('[data-side-close]') || (e.target.closest('.sidebar a') && document.body.classList.contains('side-open'))) setSide(false);
+  if (e.target.closest('[data-side-close]') || (e.target.closest('.sidebar a') && document.body.classList.contains('side-open') && matchMedia('(max-width:860px)').matches)) setSide(false);
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('side-open')) setSide(false); });
 

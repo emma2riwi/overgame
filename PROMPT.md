@@ -61,7 +61,10 @@ Antes de escribir código, hazme las preguntas que necesites para entender la id
     - PLATAFORMAS: accesos rápidos a PC, PS5, Xbox, Switch y Móvil
   - **Cerrado por defecto:** un riel de 78 px con íconos de contorno menta. Los títulos de sección se ven como rayitas, así la división entre secciones se nota igual.
   - **Abierto solo cuando el usuario toca el botón de menú:** se expande a 300 px.
-  - **Fondo sólido, nunca transparente:** degradado vertical de negro arriba a morado abajo, con un brillo menta suave en la esquina inferior y un borde derecho neón menta. El texto conserva el mismo color y contraste en todo el degradado. El contenido de la página no se ve a través del menú ni se cruza con él, y ninguna línea decorativa pasa por encima de textos o botones.
+  - **Forma estilo GameHub:** el panel abierto tiene un borde derecho diagonal neón menta. Es recto arriba y a partir de dos tercios se va metiendo hacia la izquierda en dos tramos. Lleva una segunda línea morada paralela por fuera, abajo.
+  - **Relleno:** negro semitransparente con un degradado morado muy gradual (casi nada arriba, más intenso abajo) y un brillo morado tenue en la esquina inferior izquierda. Se funde con el fondo de la página, sin cortes bruscos.
+  - **Integrado en escritorio:** al abrirse, el menú EMPUJA el contenido hacia la derecha (no lo tapa ni oscurece la página) y se queda abierto mientras navegas, como parte de la plataforma. En el celular es un cajón que se superpone y se cierra al elegir una opción.
+  - **Que nada cruce el borde:** todo el contenido del panel abierto (logo, ítems, plataformas, Admin, Menú principal) mide como máximo 212 px de ancho, para que ningún texto ni botón cruce la diagonal en ninguna altura de pantalla. El texto conserva el mismo color sobre el degradado.
   - **Ítem activo:** una "píldora" morada con brillo que se desliza entre opciones. Se recoloca al abrir o cerrar el menú.
   - El fondo oscuro de la página que aparece al abrirlo va DEBAJO del menú y sin desenfoque.
   - En el celular es un cajón lateral, y además hay una barra inferior con 5 pestañas.
