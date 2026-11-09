@@ -1062,3 +1062,6 @@ body.menu-float.side-open .plat-grid a,body.menu-float.side-open .admin-link,bod
     scrollbar-width:thin;scrollbar-color:rgba(83,230,212,.35) transparent}
   #detail .detail{min-height:100%}
 }
+/* menú lateral: se puede desplazar pero sin mostrar la barra de scroll */
+.side-body{scrollbar-width:none;-ms-overflow-style:none}
+.side-body::-webkit-scrollbar{display:none;width:0;height:0}
