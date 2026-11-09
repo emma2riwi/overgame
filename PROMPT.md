@@ -66,7 +66,21 @@ Antes de escribir código, hazme las preguntas que necesites para entender la id
   - El fondo oscuro de la página que aparece al abrirlo va DEBAJO del menú y sin desenfoque.
   - En el celular es un cajón lateral, y además hay una barra inferior con 5 pestañas.
 - **Barra superior:** buscador (tecla `/`) y acceso a favoritos.
-- **Menú de bienvenida** al abrir la app (y con la tecla M): pantalla completa con video de fondo que cambia con cada opción, 7 opciones grandes navegables con el teclado y animación de entrada y salida.
+- **Menú de bienvenida** (página de inicio, el primer contacto; también con la tecla M), a pantalla completa:
+  - **Arriba:** el logo con proporciones fijas (el monograma mide lo mismo de alto que el texto "OVERGAME", unos 35 px en escritorio) y el botón "Entrar".
+  - **Fondo:** video que cambia con cada opción. Encima lleva un degradado negro sólido desde la izquierda que se desvanece hacia la mitad de la imagen, para que los textos resalten. En el celular el degradado va de abajo hacia arriba.
+  - **Slogan:** "Encuentra qué jugar según cómo te sientes."
+  - **Las 7 secciones** (Mi panel, Descubrir, Mood Finder, Explorar, Demos, Calendario, Biblioteca):
+    - en mayúsculas grandes, con contorno y SIEMPRE en una sola línea
+    - el tamaño depende del ancho Y del alto de la pantalla (`clamp(26px, min(4.4vw, 6vh), 64px)`), para que las 7 quepan sin pasar del pie en ninguna pantalla, de 620 px de alto hasta 4K
+    - separadas entre sí para que no parezcan texto corrido
+  - **Hover / opción activa** (se mantiene igual):
+    - el título se rellena de gris claro con brillo morado y se corre un poco
+    - una barra menta vertical se desliza hasta él y se alinea exactamente con el título
+    - la descripción aparece AL LADO del título, con una línea menta a su izquierda, sin empujar ni cruzarse con los otros títulos
+    - en el celular, la descripción sale debajo
+  - **Tarjeta "En pantalla"** a la derecha con el juego del fondo.
+  - **Pie:** datos (juegos, demos gratis, salidas del mes) y las teclas ↑ ↓ Enter.
 
 ## 5. Tarjetas de juego (regla clave)
 Al pasar el mouse sobre una tarjeta, esta **crece de forma suave desde su posición** (animación FLIP). Se convierte en una vista flotante que reproduce el tráiler en silencio y despliega:

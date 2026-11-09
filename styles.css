@@ -973,3 +973,34 @@ body.side-open .admin-link,body.side-open .sidebar .menu-btn{width:100%}
 .brand-mobile .brand-word{width:120px;height:auto}
 .intro .brand-word,.intro-brand .brand-word{width:200px}
 @media (max-height:640px){.sidebar .nav a{padding-top:8px;padding-bottom:8px}.sidebar .nav-label{margin:10px 0 4px}}
+
+/* ===== menú de inicio v2: títulos en una línea, tamaño según pantalla, degradado y logo proporcional ===== */
+.intro-shade{background:
+  linear-gradient(90deg,#0F1417 0%,rgba(15,20,23,.96) 22%,rgba(15,20,23,.82) 38%,rgba(15,20,23,.45) 50%,rgba(15,20,23,.08) 62%,transparent 72%),
+  linear-gradient(0deg,rgba(15,20,23,.95) 0%,transparent 30%),linear-gradient(180deg,rgba(15,20,23,.75) 0%,transparent 22%),
+  radial-gradient(900px 600px at 0% 100%,rgba(96,69,244,.26),transparent 60%)}
+.intro-top .brand{gap:14px;align-items:center}
+.intro-top .brand-mark img{width:clamp(56px,5.2vw,74px);height:auto}
+.intro-top .brand-word{width:clamp(150px,14vw,200px);height:auto}
+.intro-main{min-height:0;gap:10px;max-width:min(760px,100%)}
+.intro-slogan{margin-bottom:clamp(6px,2vh,18px)}
+.intro-menu{gap:clamp(4px,1.1vh,12px)}
+.im{grid-template-columns:1fr;padding:clamp(2px,.5vh,6px) 0}
+.im-t{grid-column:1;white-space:nowrap;font-size:clamp(26px,min(4.4vw,6vh),64px);line-height:1.04}
+.im-d{grid-column:1}
+.im.on .im-d span{padding:6px 0 4px 12px}
+@media (max-width:860px){
+  .intro-top .brand-mark img{width:52px}
+  .intro-top .brand-word{width:140px}
+  .im-t{font-size:clamp(24px,min(8.6vw,5.4vh),44px)}
+  .intro-shade{background:linear-gradient(0deg,rgba(15,20,23,.97) 30%,rgba(15,20,23,.7) 65%,rgba(15,20,23,.85) 100%)}
+}
+@media (max-height:640px) and (min-width:861px){ .im-t{font-size:clamp(24px,5.6vh,44px)} .intro-slogan{display:block;font-size:18px} }
+/* descripción al lado del título (escritorio): no empuja ni cruza los demás títulos */
+@media (min-width:861px){
+  .im{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto;align-items:center;column-gap:clamp(16px,2vw,28px)}
+  .im-d{grid-column:2;grid-row:1;display:block;opacity:0;transform:translateX(-10px);transition:opacity .35s ease,transform .5s cubic-bezier(.16,1,.3,1);pointer-events:none}
+  .im-d span{display:block;max-width:30ch;font-size:clamp(13px,1.05vw,15px);line-height:1.4;padding:0!important;border-left:1px solid rgba(83,230,212,.45);padding-left:14px!important}
+  .im.on .im-d{opacity:1;transform:translateX(10px)}
+}
+@media (max-width:860px){ .im-t{letter-spacing:-.01em} }

@@ -749,7 +749,8 @@ function setIntro(k, first) {
   items.forEach((b, j) => b.classList.toggle('on', j === k));
   const on = items[k];
   const bar = $('.intro-bar', el);
-  bar.style.transform = `translateY(${on.offsetTop}px)`; bar.style.height = on.querySelector('.im-t').offsetHeight + 'px';
+  const place = () => { const t = on.querySelector('.im-t'); bar.style.transform = `translateY(${t.offsetTop}px)`; bar.style.height = t.offsetHeight + 'px'; };
+  place(); clearTimeout(intro.bt); intro.bt = setTimeout(place, 600);
   $('.intro-skip', el).dataset.go = MENU[k].r;
   if (!changed && !first) return;
   clearTimeout(intro.t);
