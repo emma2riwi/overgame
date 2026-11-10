@@ -69,11 +69,12 @@ function badgesHTML(g) {
   if (g.price === 0) b.push(`<span class="tag mint">Free</span>`);
   if (g.off && !g.soon) b.push(`<span class="tag outline-mint">-${g.off}%</span>`);
   if (g.soon && g.off) b.push(`<span class="tag outline-mint">Preventa -${g.off}%</span>`);
+  if (g.votes) b.push(`<span class="tag purple">${g.votes} voto${g.votes > 1 ? 's' : ''}</span>`);
   return b.join('');
 }
-const cardHTML = g => `
+const cardHTML = (g, pre) => `
   <article class="card" data-card="${g.id}" tabindex="0" role="button" aria-label="${esc(g.name)}: ver ficha">
-    <div class="card-media"><img src="${g.img}" alt="" loading="lazy"><div class="card-badges">${badgesHTML(g)}</div></div>
+    <div class="card-media"><img src="${g.img}" alt="" loading="lazy"><div class="card-badges">${typeof pre === 'string' ? pre : ''}${badgesHTML(g)}</div></div>
     <div class="card-body">
       <div class="card-meta"><span>${esc(g.genres.slice(0,2).join(' / '))}</span>${g.meta ? `<span class="score">★ ${g.meta}</span>` : ''}</div>
       <h3>${esc(g.name)}</h3>
@@ -105,6 +106,9 @@ function stores(g) {
   if (g.custom) {
     list.length = 0;
     for (const [k, n] of STORE_KEYS) if (g.links?.[k]) list.push({ k, n, url: g.links[k], price: g.price, base: g.base, off: g.off, real: true });
+  } else if (g.ext) { // fuera de la tienda de Steam: solo su tienda oficial; gratis = real, de pago = referencia
+    list.length = 0;
+    for (const [k, n] of STORE_KEYS) if (g.links?.[k]) list.push({ k, n, url: g.links[k], price: g.price, base: g.base, off: g.off, real: g.price === 0 });
   }
   const priced = list.filter(s => s.price != null);
   const best = priced.length ? priced.reduce((a, b) => b.price < a.price ? b : a) : null;
@@ -247,7 +251,7 @@ function openModal(id) {
       <div style="display:flex;flex-direction:column;gap:12px">
         <span class="meta-line">Comparativa de tiendas</span>
         ${storesHTML(g)}
-        <p class="note">${g.custom ? 'Juego agregado desde Admin: links directos que cargaste tú.' : 'Steam: precio real (8 nov 2026). “REF.”: precio de referencia del prototipo, sin conexión a esa tienda.'}</p>
+        <p class="note">${g.custom ? 'Juego agregado desde Admin: links directos que cargaste tú.' : g.ext ? 'Este juego no se vende en Steam: el enlace lleva a su tienda o sitio oficial. “REF.”: precio de referencia.' : 'Steam: precio real (8 nov 2026). “REF.”: precio de referencia del prototipo, sin conexión a esa tienda.'}</p>
         ${g.custom && videoKind(g.video) === 'yt' ? `<a class="btn btn-ghost" href="${esc(g.video)}" target="_blank" rel="noopener">${icon('play')}Ver tráiler en YouTube</a>` : ''}
         ${g.demo ? `<a class="btn btn-mint" href="${demoUrl(g)}" target="_blank" rel="noopener">${icon('play')}${g.custom ? 'Probar demo gratis' : 'Descargar demo gratis en Steam'}</a>`
           : best ? `<a class="btn btn-mint" href="${best.url}" target="_blank" rel="noopener">${icon('store')}${g.soon ? 'Reservar' : 'Comprar'} en ${best.n} · ${money(best.price)}</a>` : ''}
@@ -313,6 +317,9 @@ function viewInicio() {
   const week = GAMES.filter(g => g.soon || (g.date && Math.abs(daysTo(g.date)) <= 7)).filter(g => { const d = daysTo(g.date); return d >= -7 && d <= 10; }).sort((a, b) => a.date.localeCompare(b.date));
   const top = GAMES.filter(released).filter(g => g.meta).sort((a, b) => b.meta - a.meta).slice(0, 8);
   const deals = GAMES.filter(g => released(g) && g.off).sort((a, b) => b.off - a.off).slice(0, 8);
+  const voted = GAMES.filter(g => g.votes).sort((a, b) => b.votes - a.votes || (b.meta || 0) - (a.meta || 0));
+  const podium = [...new Set(voted.map(g => g.votes))].slice(0, 3);
+  const totalVotes = voted.reduce((s, g) => s + g.votes, 0);
   view.innerHTML = `
   <section class="hero">
     <div class="hero-media"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${f.id}/library_hero.jpg" alt="" onerror="this.src='${f.img}'"><video id="heroVideo" muted loop playsinline style="position:absolute;inset:0;opacity:0;transition:opacity 1s"></video></div>
@@ -338,6 +345,11 @@ function viewInicio() {
         <h3>${m.t}</h3><p>${m.d}</p><span class="go">Sintonizar ${icon('arrow')}</span>
       </a>`).join('')}</div>
   </section>
+
+  ${voted.length ? `<section>
+    <div class="sec-head"><div><h2>Los más votados por el grupo</h2><p>${totalVotes} votos · ${voted.length} juegos</p></div><a class="link" href="#/explorar?orden=votos">Ver los ${voted.length} ${icon('arrow')}</a></div>
+    <div class="grid">${voted.slice(0, 8).map(g => { const r = podium.indexOf(g.votes); return cardHTML(g, r > -1 ? `<span class="tag mint">${r + 1}º</span>` : ''); }).join('')}</div>
+  </section>` : ''}
 
   <section>
     <div class="sec-head"><div><h2>Lanzamientos de esta semana</h2><p>Lo que sale (o acaba de salir) en Steam alrededor de hoy.</p></div><a class="link" href="#/calendario">Ver calendario ${icon('arrow')}</a></div>
@@ -513,6 +525,7 @@ const exp = { p: new Set(), g: new Set(), m: new Set(), q: '', sort: 'meta' };
 const GENRES = [...new Set(GAMES.flatMap(g => g.genres))].sort((a, b) => a.localeCompare(b, 'es'));
 function viewExplorar(params) {
   if (params.get('p')) { exp.p = new Set([params.get('p')]); history.replaceState(null, '', '#/explorar'); }
+  if (params.get('orden') === 'votos') { exp.sort = 'votes'; history.replaceState(null, '', '#/explorar'); }
   const grp = (key, label, items) => `<div class="f-row"><span>${label}</span><div class="f-opts">${items.map(([k, t]) => `<button class="fchip" data-f="${key}:${k}" aria-pressed="${exp[key].has(k)}">${t}</button>`).join('')}</div></div>`;
   view.innerHTML = `
   <section class="stage">${stageBg(1245620)}<span class="stage-word" aria-hidden="true">Explorar</span><div class="stage-body"><h1 class="page-title" style="margin-top:10px">Explora el <em>catálogo</em></h1><p class="lede">Combina dispositivo, género y modo de juego. Pasa el mouse sobre una tarjeta para ver el tráiler.</p></div></section>
@@ -523,7 +536,7 @@ function viewExplorar(params) {
   </div>
   <div style="display:flex;flex-direction:column;gap:16px">
     <div class="result-count"><span id="count"></span><span style="display:flex;gap:8px;align-items:center"><button class="btn btn-ghost btn-sm" id="clearF">Limpiar filtros</button>
-      <select class="sort" id="sort" aria-label="Ordenar"><option value="meta">Mejor valorados</option><option value="price">Precio: menor a mayor</option><option value="off">Mayor descuento</option><option value="date">Más recientes</option></select></span></div>
+      <select class="sort" id="sort" aria-label="Ordenar"><option value="meta">Mejor valorados</option><option value="price">Precio: menor a mayor</option><option value="off">Mayor descuento</option><option value="date">Más recientes</option><option value="votes">Más votados</option></select></span></div>
     <div class="grid" id="results"></div>
   </div>`;
   $('#sort').value = exp.sort;
@@ -543,7 +556,7 @@ function renderExploreResults() {
     (!exp.g.size || g.genres.some(x => exp.g.has(x))) &&
     (!exp.m.size || g.modes.some(x => exp.m.has(x))) &&
     (!q || (g.name + ' ' + g.genres.join(' ') + ' ' + g.dev + ' ' + g.moods.join(' ')).toLowerCase().includes(q)));
-  const by = { meta: (a, b) => (b.meta || 0) - (a.meta || 0), price: (a, b) => (a.price ?? 999) - (b.price ?? 999), off: (a, b) => b.off - a.off, date: (a, b) => (b.date || '').localeCompare(a.date || '') };
+  const by = { meta: (a, b) => (b.meta || 0) - (a.meta || 0), price: (a, b) => (a.price ?? 999) - (b.price ?? 999), off: (a, b) => b.off - a.off, date: (a, b) => (b.date || '').localeCompare(a.date || ''), votes: (a, b) => (b.votes || 0) - (a.votes || 0) || (b.meta || 0) - (a.meta || 0) };
   list.sort(by[exp.sort]);
   $('#count').innerHTML = `<b>${list.length}</b> juego${list.length === 1 ? '' : 's'}${q ? ` para “${esc(exp.q)}”` : ''}`;
   box.innerHTML = list.length ? list.map(cardHTML).join('') : `<div class="empty" style="grid-column:1/-1"><h3>Nada con esa combinación</h3><p>Quita algún filtro o prueba otra búsqueda.</p></div>`;
@@ -825,7 +838,7 @@ const RAIL_TIPS = {
   demos: ['Centro de Demos', 'Juega en el navegador o baja la demo oficial gratis'],
   calendario: ['Calendario & Preventas', 'Fechas de salida, cuenta regresiva y precios por tienda'],
   biblioteca: ['Biblioteca / Favoritos', 'Tus favoritos y alertas de precio'],
-  admin: ['Admin', 'Agrega juegos con su tráiler y links de tiendas'],
+  admin: ['Admin', 'Agrega juegos con su tráiler y links de tiendas (requiere iniciar sesión)'],
 };
 const railTip = document.createElement('div');
 railTip.className = 'rail-tip'; railTip.setAttribute('role', 'tooltip'); railTip.id = 'railTip';
@@ -1094,7 +1107,66 @@ function applyVideo(g, u) {
   const k = videoKind(u);
   if (k === 'hls') g.hls = u; else if (k === 'file') { g.mt = u; g.mp4 = u; }
 }
+/* ---------- acceso al panel Admin (login) ---------- */
+const ADMIN_SESSION_H = 8;
+const adminSession = {
+  ok() { try { const s = JSON.parse(sessionStorage.getItem('og.adminSession') || 'null'); return !!s && s.exp > Date.now(); } catch { return false; } },
+  start() { try { sessionStorage.setItem('og.adminSession', JSON.stringify({ exp: Date.now() + ADMIN_SESSION_H * 36e5 })); } catch {} },
+  end() { try { sessionStorage.removeItem('og.adminSession'); } catch {} }
+};
+const loginLock = { fails: 0, until: 0 };
+async function checkAdmin(user, pass) {
+  const C = window.OG_ADMIN; if (!C || !crypto?.subtle) return false;
+  const hex = h => new Uint8Array(h.match(/../g).map(b => parseInt(b, 16)));
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: hex(C.salt), iterations: C.iter, hash: 'SHA-256' }, key, 256);
+  const got = [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+  let diff = user.trim().toLowerCase() === C.user ? 0 : 1;
+  for (let i = 0; i < Math.max(got.length, C.hash.length); i++) diff |= (got.charCodeAt(i) || 0) ^ (C.hash.charCodeAt(i) || 0);
+  return diff === 0;
+}
 function viewAdmin() {
+  if (adminSession.ok()) {
+    viewAdminPanel();
+    const io = $('.adm-io', view);
+    if (io && !$('#admLogout', io)) {
+      io.insertAdjacentHTML('beforeend', `<button class="btn btn-ghost btn-sm" id="admLogout">${icon('back')}Cerrar sesión</button>`);
+      $('#admLogout').onclick = () => { adminSession.end(); toast('Sesión cerrada'); viewAdmin(); };
+    }
+    return;
+  }
+  view.innerHTML = `
+  <section class="login-wrap">
+    <form class="login" id="loginForm" novalidate>
+      <span class="login-ico">${icon('admin')}</span>
+      <h1>Acceso de administrador</h1>
+      <p>Inicia sesión para agregar, editar o borrar juegos del catálogo.</p>
+      <label class="f">Usuario<input name="user" autocomplete="username" required autocapitalize="none" spellcheck="false"></label>
+      <label class="f">Contraseña<span class="pw"><input name="pass" type="password" autocomplete="current-password" required><button type="button" class="pw-eye" aria-label="Mostrar contraseña" aria-pressed="false">Ver</button></span></label>
+      <p class="login-err" id="loginErr" role="alert"></p>
+      <button class="btn btn-mint" type="submit" id="loginBtn">${icon('check')}Entrar al panel</button>
+      <a class="login-back" href="#/inicio">${icon('back')}Volver a la plataforma</a>
+    </form>
+  </section>`;
+  const f = $('#loginForm'), err = $('#loginErr'), btn = $('#loginBtn'), eye = $('.pw-eye', f);
+  eye.onclick = () => { const show = f.pass.type === 'password'; f.pass.type = show ? 'text' : 'password'; eye.textContent = show ? 'Ocultar' : 'Ver'; eye.setAttribute('aria-pressed', show); eye.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña'); };
+  setTimeout(() => f.user.focus({ preventScroll: true }), 80);
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    const wait = Math.ceil((loginLock.until - Date.now()) / 1000);
+    if (wait > 0) { err.textContent = `Demasiados intentos. Espera ${wait} s.`; return; }
+    if (!f.user.value.trim() || !f.pass.value) { err.textContent = 'Escribe usuario y contraseña.'; return; }
+    btn.disabled = true; err.textContent = '';
+    let ok = false; try { ok = await checkAdmin(f.user.value, f.pass.value); } catch {}
+    btn.disabled = false;
+    if (ok) { loginLock.fails = 0; adminSession.start(); toast('Sesión iniciada'); viewAdmin(); return; }
+    loginLock.fails++; f.pass.value = ''; f.pass.focus();
+    if (loginLock.fails >= 5) { loginLock.until = Date.now() + 30000; loginLock.fails = 0; err.textContent = 'Demasiados intentos. Espera 30 s.'; }
+    else err.textContent = 'Usuario o contraseña incorrectos.';
+    f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake');
+  });
+}
+function viewAdminPanel() {
   const g = admEdit ? CUSTOM.find(x => x.id === admEdit) : null;
   const v = (k, d = '') => esc(g ? (g[k] ?? d) : d);
   const has = (k, x) => g ? g[k].includes(x) : false;

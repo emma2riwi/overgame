@@ -161,7 +161,14 @@ Al salir, vuelve a su sitio con la misma suavidad, sin parpadeos ni zonas negras
    - logros desbloqueables
    - "continuar jugando"
    - últimas demos jugadas
-8. **Admin:** formulario para agregar juegos propios con:
+8. **Admin** (requiere iniciar sesión):
+   - **Login propio** antes del panel:
+     - usuario y contraseña, botón "Ver" para mostrar la contraseña, mensajes de error claros
+     - tras 5 intentos fallidos, espera de 30 s
+     - la contraseña NUNCA va escrita en el código: `admin-config.js` guarda solo su huella PBKDF2-SHA256 (sal + 150 000 iteraciones), que se compara en el navegador con WebCrypto
+     - la sesión dura 8 h en esa pestaña (sessionStorage) y hay botón "Cerrar sesión"
+     - aclarar que en un sitio estático esto es una barrera de acceso, no seguridad de servidor; para varios administradores con cuentas reales se usaría Supabase o Firebase
+   - Formulario para agregar juegos propios con:
    - nombre, estudio, descripción y portada
    - video (`.mp4`, `.webm` o `.m3u8`; si es de YouTube, se muestra como botón "Ver tráiler")
    - fecha, precio, descuento, Metacritic y exigencia
@@ -193,7 +200,7 @@ Probar en un navegador real a 1440 px y a 390 px, y el menú lateral también en
 - el Mood Finder completo
 - la ficha fija del Calendario al hacer scroll
 - jugar una demo
-- agregar y borrar un juego desde Admin
+- el login de Admin (contraseña incorrecta, bloqueo, entrar, recargar, cerrar sesión) y agregar y borrar un juego
 - recargar y comprobar que todo persiste
 
 No debe haber errores en la consola ni scroll horizontal.

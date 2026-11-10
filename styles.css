@@ -1065,3 +1065,30 @@ body.menu-float.side-open .plat-grid a,body.menu-float.side-open .admin-link,bod
 /* menú lateral: se puede desplazar pero sin mostrar la barra de scroll */
 .side-body{scrollbar-width:none;-ms-overflow-style:none}
 .side-body::-webkit-scrollbar{display:none;width:0;height:0}
+
+/* ===== login del panel Admin ===== */
+.login-wrap{min-height:calc(100dvh - 120px);display:grid;place-items:center;padding:24px 0}
+.login{width:min(420px,100%);display:grid;gap:14px;padding:32px 28px;border-radius:22px;
+  background:linear-gradient(180deg,rgba(96,69,244,.14),rgba(15,20,23,.92) 55%);border:1px solid rgba(96,69,244,.45);
+  box-shadow:0 0 0 1px rgba(83,230,212,.08) inset,0 30px 80px rgba(15,20,23,.7),0 0 60px rgba(96,69,244,.25)}
+.login-ico{display:grid;place-items:center;width:52px;height:52px;border-radius:14px;border:1px solid rgba(83,230,212,.4);background:rgba(83,230,212,.08);color:var(--mint)}
+.login-ico svg{width:26px;height:26px;filter:drop-shadow(0 0 6px rgba(83,230,212,.6))}
+.login h1{font-size:clamp(24px,3vw,30px);line-height:1.1;letter-spacing:-.02em;margin:4px 0 0}
+.login>p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.login .f{display:grid;gap:6px;font-size:13px;color:var(--muted);font-weight:500}
+.login input{width:100%;min-width:0;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(15,20,23,.85);color:var(--gray);font:inherit;font-size:15px;transition:border-color .2s,box-shadow .2s}
+.login input:focus{outline:none;border-color:var(--mint);box-shadow:0 0 0 3px rgba(83,230,212,.18)}
+.login .pw{position:relative;display:block}
+.login .pw input{padding-right:78px}
+.pw-eye{position:absolute;right:6px;top:6px;height:34px;padding:0 12px;border-radius:9px;font:600 12.5px Outfit,sans-serif;color:var(--mint);background:rgba(83,230,212,.08)}
+.pw-eye:hover{background:rgba(83,230,212,.16)}
+.login-err{min-height:1.2em;margin:0;color:var(--mint);font-weight:600;font-size:13.5px}
+.login-err:empty{min-height:0}
+.login .btn-mint{height:48px;justify-content:center}
+.login .btn-mint:disabled{opacity:.6;cursor:progress}
+.login-back{display:inline-flex;align-items:center;gap:6px;justify-self:center;font-size:13px;color:var(--muted)}
+.login-back:hover{color:var(--mint)}
+.login-back svg{width:15px;height:15px}
+.login.shake{animation:loginShake .4s cubic-bezier(.36,.07,.19,.97)}
+@keyframes loginShake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+@media (prefers-reduced-motion:reduce){.login.shake{animation:none}}
